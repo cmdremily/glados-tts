@@ -1,13 +1,9 @@
 import re
-from typing import Dict, Any
-
-from unidecode import unidecode
-
-from utils.text.numbers import normalize_numbers
-from utils.text.symbols import phonemes_set
-
 from dp.phonemizer import Phonemizer
-import torch
+from glados.utils.numbers import normalize_numbers
+from glados.utils.symbols import phonemes_set
+from typing import Dict, Any
+from unidecode import unidecode
 
 # Regular expression matching whitespace:
 _whitespace_re = re.compile(r'\s+')
@@ -31,8 +27,18 @@ _abbreviations = [(re.compile('\\b%s\\.' % x[0], re.IGNORECASE), x[1]) for x in 
     ('esq', 'esquire'),
     ('ltd', 'limited'),
     ('col', 'colonel'),
-    ('ft', 'fort')
+    ('ft', 'fort'),
+    ('etc', 'et seterr ah'),
 ]]
+
+_corrections = [(re.compile('\\b%s' % x[0], re.IGNORECASE), x[1]) for x in [
+    ('iso.?8601', 'ISO eighty six oh one'),
+]]
+
+def expand_corrections(text):
+    for regex, replacement in _corrections:
+        text = re.sub(regex, replacement, text)
+    return text
 
 
 def expand_abbreviations(text):
@@ -51,6 +57,7 @@ def no_cleaners(text):
 
 def english_cleaners(text):
     text = unidecode(text)
+    text = expand_corrections(text)
     text = normalize_numbers(text)
     text = expand_abbreviations(text)
     return text
