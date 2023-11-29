@@ -31,18 +31,9 @@ _abbreviations = [(re.compile('\\b%s\\.' % x[0], re.IGNORECASE), x[1]) for x in 
     ('etc', 'et seterr ah'),
 ]]
 
-_corrections = [(re.compile('\\b%s' % x[0], re.IGNORECASE), x[1]) for x in [
-    ('iso.?8601', 'ISO eighty six oh one'),
-]]
 
-def expand_corrections(text):
-    for regex, replacement in _corrections:
-        text = re.sub(regex, replacement, text)
-    return text
-
-
-def expand_abbreviations(text):
-    for regex, replacement in _abbreviations:
+def mass_regex_replace(text, replacements):
+    for regex, replacement in replacements:
         text = re.sub(regex, replacement, text)
     return text
 
@@ -57,9 +48,8 @@ def no_cleaners(text):
 
 def english_cleaners(text):
     text = unidecode(text)
-    text = expand_corrections(text)
     text = normalize_numbers(text)
-    text = expand_abbreviations(text)
+    text = mass_regex_replace(text, _abbreviations)
     return text
 
 
@@ -68,7 +58,9 @@ class Cleaner:
     def __init__(self,
                  cleaner_name: str,
                  use_phonemes: bool,
-                 lang: str) -> None:
+                 lang: str,
+                 user_corrections: dict=None) -> None:
+        self.user_corrections = user_corrections
         if cleaner_name == 'english_cleaners':
             self.clean_func = english_cleaners
         elif cleaner_name == 'no_cleaners':
@@ -82,6 +74,8 @@ class Cleaner:
             self.phonemize = Phonemizer.from_checkpoint('models/en_us_cmudict_ipa_forward.pt')
 
     def __call__(self, text: str) -> str:
+        if not self.user_corrections is None:
+            text = mass_regex_replace(text, self.user_corrections)
         text = self.clean_func(text)
         if self.use_phonemes:
             text = self.phonemize(text, lang='en_us')

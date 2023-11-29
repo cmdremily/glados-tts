@@ -1,3 +1,6 @@
 **/__pycache__/**
 *.wav
 audio/*
+build/
+glados_tts.egg-info
+models/
