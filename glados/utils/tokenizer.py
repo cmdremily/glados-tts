@@ -1,5 +1,7 @@
 from typing import List
+
 from glados.utils.symbols import phonemes
+
 
 class Tokenizer:
 

@@ -1,0 +1,10 @@
+{
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "ms-python.autopep8",
+    "[python]": {
+        "editor.defaultFormatter": "giyyapan.pyformat",
+        "editor.codeActionsOnSave": {
+            "source.organizeImports": true
+        }
+    },
+}

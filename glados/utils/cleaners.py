@@ -1,8 +1,9 @@
 import re
+from typing import Any, Dict
+
 from dp.phonemizer import Phonemizer
 from glados.utils.numbers import normalize_numbers
 from glados.utils.symbols import phonemes_set
-from typing import Dict, Any
 from unidecode import unidecode
 
 # Regular expression matching whitespace:
@@ -59,7 +60,7 @@ class Cleaner:
                  cleaner_name: str,
                  use_phonemes: bool,
                  lang: str,
-                 user_corrections: dict=None) -> None:
+                 user_corrections: dict = None) -> None:
         self.user_corrections = user_corrections
         if cleaner_name == 'english_cleaners':
             self.clean_func = english_cleaners
